@@ -21,6 +21,6 @@
 // };
 
 int create();
-// void remove();
+int rremove();
 // void view();
 // void write();

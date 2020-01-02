@@ -16,7 +16,7 @@ int create(){
   }
 
   int shmd;
-  shmd = shmget(MEMKEY, SIZE, IPC_CREAT | IPC_EXCL | 0644);
+  shmd = shmget(MEMKEY, SIZE, IPC_CREAT | 0644);
   if (shmd == -1){
     printf("Error Creating Shared Memory: %s\n", strerror(errno));
     return -1;
@@ -26,7 +26,7 @@ int create(){
 
   int fd;
   fd = open("story.txt", O_CREAT | O_TRUNC | O_RDWR, 0644);
-  if (shmd == -1){
+  if (fd == -1){
     printf("Error Creating Story File: %s\n", strerror(errno));
     return -1;
   } else {
@@ -38,14 +38,49 @@ int create(){
 
 }
 
+int rremove(){
+
+  int semd;
+  semd = semget(SEMKEY,1,0);
+  if (semd == -1){
+    printf("Error Accessing Semaphore: %s\n", strerror(errno));
+    return -1;
+  } else {
+    printf("Trying to get in...\n");
+    semop(semd, &sb, 1);
+  }
+  int shmd;
+  shmd = shmget(MEMKEY, SIZE, 0);
+  if (shmd == -1){
+    printf("Error Accessing Shared Memory: %s\n", strerror(errno));
+    return -1;
+  }
+
+  int fd;
+  fd = open("story.txt", O_RDONLY);
+  if (shmd == -1){
+    printf("Error Accessing Story File: %s\n", strerror(errno));
+    return -1;
+  }
+
+  shmctl(shmd, IPC_RMID, 0);
+  printf("Shared Memory Removed\n");
+  semctl(semd, IPC_RMID, 0);
+  printf("Semaphore Removed\n");
+  remove("story.txt");
+  printf("File Removed\n");
+
+ return 0;
+
+}
+
 int main(int argc, char * argv[]){
 
   if (argc == 2) {
     if (strcmp(argv[1],"-c") == 0) {
       create();
     } else if (strcmp(argv[1],"-r") == 0) {
-      //remove();
-      printf("remove\n");
+      rremove();
     } else if (strcmp(argv[1],"-v") == 0) {
       //view();
       printf("view\n");
