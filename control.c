@@ -17,7 +17,7 @@ int create(){
   }
 
   int shmd;
-  shmd = shmget(MEMKEY, SIZE, IPC_CREAT | 0644);
+  shmd = shmget(MEMKEY, sizeof(int), IPC_CREAT | 0644);
   if (shmd == -1){
     printf("Error Creating Shared Memory: %s\n", strerror(errno));
     return -1;
@@ -57,7 +57,7 @@ int rremove(){
   view();
 
   int shmd;
-  shmd = shmget(MEMKEY, SIZE, 0);
+  shmd = shmget(MEMKEY, sizeof(int), 0);
   if (shmd == -1){
     printf("Error Accessing Shared Memory: %s\n", strerror(errno));
     return -1;
@@ -90,9 +90,9 @@ int view(){
     printf("Error Viewing Story File: %s\n", strerror(errno));
     return -1;
   }
-  char buff[SIZE];
+  char buff[1000];
   int r;
-  r = read(fd,buff,SIZE);
+  r = read(fd,buff,1000);
   printf("The story so far:\n");
   buff[r] = 0;
   printf("%s\n", buff);

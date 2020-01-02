@@ -11,7 +11,6 @@
 
 #define SEMKEY 202001
 #define MEMKEY 202002
-#define SIZE 1000
 
 union semun {
 	int val;		// Value for SETVAL

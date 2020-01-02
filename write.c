@@ -15,31 +15,38 @@ int wwrite(){
   }
 
   int shmd;
-  shmd = shmget(MEMKEY, SIZE, 0);
+  shmd = shmget(MEMKEY, sizeof(int), 0);
   if (shmd == -1){
     printf("Error Accessing Shared Memory: %s\n", strerror(errno));
     return -1;
   }
 
   int fd;
-  fd = open("story.txt", O_WRONLY | O_APPEND);
+  fd = open("story.txt", O_RDWR | O_APPEND);
   if (fd == -1){
     printf("Error Accessing Story File: %s\n", strerror(errno));
     return -1;
   }
 
-  char *old = shmat(shmd, 0, 0);
+  int *data = shmat(shmd, 0, 0);
+  char old[1000];
+  lseek(fd, -*data, SEEK_END);
+  int r = read(fd,old,*data);
+  printf("%d size\n", *data);
   printf("Last Addition: %s\n\n", old);
-  char new[SIZE];
+  char new[1000];
   printf("Your Addition: ");
-  fgets(new, SIZE, stdin);
+  fgets(new, 1000, stdin);
   printf("\n");
-
+  lseek(fd, 0, SEEK_END);
   write(fd, new, strlen(new));
   close(fd);
 
-  strcpy(old, new);
-  shmdt(old);
+  int newlen = strlen(new);
+  // printf("%d size\n", newlen);
+  *data = newlen;
+  // printf("%d data\n", *data);
+  shmdt(&data);
   sb.sem_op = 1;
   semop(semd, &sb, 1);
 
