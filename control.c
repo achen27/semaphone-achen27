@@ -11,6 +11,7 @@ int create(){
     printf("Error Creating Semaphore: %s\n", strerror(errno));
     return -1;
   } else {
+    us.val = 1;
     semctl(semd, 0, SETVAL, us);
     printf("Semaphore Created\n");
   }
@@ -47,6 +48,9 @@ int rremove(){
     return -1;
   } else {
     printf("Trying to get in...\n");
+    sb.sem_num = 0;
+    sb.sem_flg = SEM_UNDO;
+    sb.sem_op = -1;
     semop(semd, &sb, 1);
   }
 
@@ -61,7 +65,7 @@ int rremove(){
 
   int fd;
   fd = open("story.txt", O_RDONLY);
-  if (shmd == -1){
+  if (fd == -1){
     printf("Error Accessing Story File: %s\n", strerror(errno));
     return -1;
   }
@@ -90,9 +94,8 @@ int view(){
   int r;
   r = read(fd,buff,SIZE);
   printf("The story so far:\n");
-  if (r > 0){
-    printf("%s\n", buff);
-  }
+  buff[r] = 0;
+  printf("%s\n", buff);
   close(fd);
 
   return 0;

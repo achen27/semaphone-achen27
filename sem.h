@@ -23,4 +23,4 @@
 int create();
 int rremove();
 int view();
-// void write();
+int wwrite();

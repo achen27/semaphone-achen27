@@ -9,5 +9,5 @@ write.o: write.c
 	gcc -c write.c
 
 clean:
-	rm *.exe
 	rm *.o
+	rm *~
