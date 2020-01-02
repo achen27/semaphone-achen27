@@ -49,6 +49,9 @@ int rremove(){
     printf("Trying to get in...\n");
     semop(semd, &sb, 1);
   }
+
+  view();
+
   int shmd;
   shmd = shmget(MEMKEY, SIZE, 0);
   if (shmd == -1){
@@ -63,6 +66,7 @@ int rremove(){
     return -1;
   }
 
+  printf("\n");
   shmctl(shmd, IPC_RMID, 0);
   printf("Shared Memory Removed\n");
   semctl(semd, IPC_RMID, 0);
@@ -74,6 +78,27 @@ int rremove(){
 
 }
 
+int view(){
+
+  int fd;
+  fd = open("story.txt", O_RDONLY);
+  if (fd == -1){
+    printf("Error Viewing Story File: %s\n", strerror(errno));
+    return -1;
+  }
+  char buff[SIZE];
+  int r;
+  r = read(fd,buff,SIZE);
+  printf("The story so far:\n");
+  if (r > 0){
+    printf("%s\n", buff);
+  }
+  close(fd);
+
+  return 0;
+
+}
+
 int main(int argc, char * argv[]){
 
   if (argc == 2) {
@@ -82,8 +107,7 @@ int main(int argc, char * argv[]){
     } else if (strcmp(argv[1],"-r") == 0) {
       rremove();
     } else if (strcmp(argv[1],"-v") == 0) {
-      //view();
-      printf("view\n");
+      view();
     } else {
       printf("Invalid input.\n-c: Create Story\n-r: Remove Story\n-v: View Entire Story\n");
     }

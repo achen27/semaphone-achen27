@@ -22,5 +22,5 @@
 
 int create();
 int rremove();
-// void view();
+int view();
 // void write();
